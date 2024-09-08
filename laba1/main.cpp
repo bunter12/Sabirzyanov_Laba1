@@ -3,6 +3,7 @@
 #include "pipeline.h"
 #include "nps.h"
 #include <vector>
+#include <fstream>
 
 using namespace std;
 
@@ -11,6 +12,9 @@ int main() {
 	string input;
 	vector<nps> all_nps;
 	int a;
+	pipeline pipe;
+	string k;
+	nps nps;
 	vector<pipeline> all_pipeline;
 	while(true){
 		system("cls");
@@ -27,25 +31,94 @@ int main() {
 		try {
 			a = stoi(input);
 		}
-		catch (std::invalid_argument e) {
+		catch (invalid_argument e) {
 			cout << "¬ведите корректное число" << endl;
 			continue;
 		}
 		switch (a)
 		{
 		case 1:
+			system("cls");
+			pipe = AddNewPipe();
+			all_pipeline.push_back(pipe);
 			break;
 		case 2:
+			system("cls");
+			nps = AddNewNPS();
+			all_nps.push_back(nps);
 			break;
 		case 3:
+			system("cls");
+			ShowAllPipe(all_pipeline);
+			cout << endl << endl;
+			ShowAllNPS(all_nps);
+			cout <<endl<<endl<< "¬ведите 0 чтобы вернутьс€ в меню" << endl;
+			cin >> k;
+			while (k != "0") {
+				cout << "¬ведите 0 чтобы вернутьс€ в меню" << endl;
+				cin >> k;
+			}
 			break;
 		case 4:
+			system("cls");
+			EditPipe(all_pipeline);
+			cout << endl << endl << "¬ведите 0 чтобы вернутьс€ в меню" << endl;
+			cin >> k;
+			while (k != "0") {
+				cout << "¬ведите 0 чтобы вернутьс€ в меню" << endl;
+				cin >> k;
+			}
 			break;
 		case 5:
+			system("cls");
+			EditNPS(all_nps);
+			cout << endl << endl << "¬ведите 0 чтобы вернутьс€ в меню" << endl;
+			cin >> k;
+			while (k != "0") {
+				cout << "¬ведите 0 чтобы вернутьс€ в меню" << endl;
+				cin >> k;
+			}
 			break;
-		case 6:
+		case 6: {
+			system("cls");
+			ofstream file("text.txt");
+			PipeToFile(all_pipeline, file);
+			NPSToFile(all_nps, file);
+			file.close();
+			cout << "”спешно записано в файл"<<endl;
+			cout << "¬ведите 0 чтобы вернутьс€ в меню" << endl;
+			cin >> k;
+			while (k != "0") {
+				cout << "¬ведите 0 чтобы вернутьс€ в меню" << endl;
+				cin >> k;
+			}
+		}
 			break;
 		case 7:
+		{
+			system("cls");
+			ifstream file("text.txt");
+			if (!file.is_open()) {
+				cout << "Ќет файла дл€ записи данных" << endl;
+				cout << "¬ведите 0 чтобы вернутьс€ в меню" << endl;
+				cin >> k;
+				while (k != "0") {
+					cout << "¬ведите 0 чтобы вернутьс€ в меню" << endl;
+					cin >> k;
+				}
+				continue;
+			}
+			all_pipeline = PipeFromFile(file);
+			all_nps = NPSFromFile(file);
+			file.close();
+			cout << "”спешно записаны данные из файла" << endl;
+			cout << "¬ведите 0 чтобы вернутьс€ в меню" << endl;
+			cin >> k;
+			while (k != "0") {
+				cout << "¬ведите 0 чтобы вернутьс€ в меню" << endl;
+				cin >> k;
+			}
+		}
 			break;
 		case 0:
 			exit(0);

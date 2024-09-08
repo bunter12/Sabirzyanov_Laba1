@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 class nps
 {
 public:
@@ -18,3 +19,9 @@ private:
 	float effictivity;
 };
 
+
+nps AddNewNPS();
+void ShowAllNPS(std::vector<nps> all_nps);
+void EditNPS(std::vector<nps>& all_nps);
+void NPSToFile(std::vector<nps> all_nps, std::ofstream& file);
+std::vector<nps> NPSFromFile(std:: ifstream& file);
