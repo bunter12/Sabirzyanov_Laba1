@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include <vector>
+#include <unordered_map>
 class pipeline {
 public:
 	void SetName(std::string n);
@@ -20,7 +20,7 @@ private:
 
 pipeline AddNewPipe();
 bool is_number(std::string s);
-void ShowAllPipe(std::vector<pipeline> all_pipe);
-void EditPipe(std::vector<pipeline> &all_pipe);
-void PipeToFile(std::vector<pipeline> all_pipe, std::ofstream& file);
-std::vector<pipeline> PipeFromFile(std::ifstream &file);
+void ShowAllPipe(std::unordered_map<int,pipeline> all_pipe);
+void EditPipe(std::unordered_map<int, pipeline>&all_pipe);
+void PipeToFile(std::unordered_map<int, pipeline>  all_pipe, std::ofstream& file);
+std::unordered_map<int, pipeline>  PipeFromFile(std::ifstream &file);

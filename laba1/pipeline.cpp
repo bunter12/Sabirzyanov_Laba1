@@ -56,35 +56,34 @@ bool pipeline::GetRepair()
 
 pipeline AddNewPipe() {
 	cout<<"Введите название трубы:"<<endl;
-	std::string n;
-	cin >> n;
+	string input;
+	getline(cin, input);
 	pipeline newPipe;
-	newPipe.SetName(n);
+	newPipe.SetName(input);
 	cout << "Введите длину трубы:" << endl;
-	string len;
-	cin >> len;
-	while (!is_number(len)) {
+	getline(cin, input);
+	while (!is_number(input) or stoi(input)==0) {
 		cout << "Введите число" << endl;
-		cin >> len;
+		getline(cin, input);
 	}
-	newPipe.SetLenght(stoi(len));
+	newPipe.SetLenght(stoi(input));
 	cout << "Введите диаметр трубы:" << endl;
-	cin >> len;
-	while (!is_number(len)) {
+	getline(cin, input);
+	while (!is_number(input) or stoi(input) == 0) {
 		cout << "Введите число" << endl;
-		cin >> len;
+		getline(cin, input);
 	}
-	newPipe.SetDiametr(stoi(len));
+	newPipe.SetDiametr(stoi(input));
 	cout << "Нужно ли её починить(1-да,0-нет):" << endl;
-	cin >> len;
-	while (len != "0" and len != "1") {
+	getline(cin, input);
+	while (input != "0" and input != "1") {
 		cout << "Введите 1 или 0" << endl;
-		cin >> len;
+		getline(cin, input);
 	}
 	return newPipe;
 }
 
-void ShowAllPipe(vector<pipeline> all_pipe)
+void ShowAllPipe(unordered_map<int, pipeline>  all_pipe)
 {
 	for (int i = 0; i < all_pipe.size(); i++) {
 		cout << i + 1 << " труба"<<endl;
@@ -98,20 +97,20 @@ void ShowAllPipe(vector<pipeline> all_pipe)
 	}
 }
 
-void EditPipe(vector<pipeline> &all_pipe) {
+void EditPipe(unordered_map<int, pipeline>& all_pipe) {
 	ShowAllPipe(all_pipe);
 	string n;
 	cout << "Какую трубу изменить?" << endl;
-	cin >> n;
-	while (!is_number(n) or all_pipe.size() < stoi(n) or stoi(n) < 0) {
+	getline(cin, n);
+	while (!is_number(n) or all_pipe.size() < stoi(n) or stoi(n) < 0 or stoi(n) == 0) {
 		cout << "Введите корректное число" << endl;
-		cin >> n;
+		getline(cin, n);
 	}
 	all_pipe[stoi(n) - 1].SetRepair(1 - all_pipe[stoi(n)-1].GetRepair());
 	cout << "Успешно изменено";
 }
 
-void PipeToFile(std::vector<pipeline> all_pipe, std::ofstream& file)
+void PipeToFile(std::unordered_map<int, pipeline> all_pipe, std::ofstream& file)
 {
 	file << all_pipe.size()<<endl;
 	for (int i = 0; i < all_pipe.size(); i++) {
@@ -122,23 +121,23 @@ void PipeToFile(std::vector<pipeline> all_pipe, std::ofstream& file)
 	}
 }
 
-vector<pipeline> PipeFromFile(ifstream& file)
+unordered_map<int, pipeline> PipeFromFile(ifstream& file)
 {
-	vector<pipeline> all_pipe;
+	unordered_map<int, pipeline> all_pipe;
 	string n;
-	file>>n;
+	getline(file, n);
 	int len = stoi(n);
 	for (int i = 0; i < len; i++) {
 		pipeline new_pipe;
-		file >> n;
+		getline(file, n);
 		new_pipe.SetName(n);
-		file >> n;
+		getline(file, n);
 		new_pipe.SetLenght(stoi(n));
-		file >> n;
+		getline(file, n);
 		new_pipe.SetDiametr(stoi(n));
-		file >> n;
+		getline(file, n);
 		new_pipe.SetRepair(stoi(n));
-		all_pipe.push_back(new_pipe);
+		all_pipe[i] = new_pipe;
 	}
 	return all_pipe;
 }

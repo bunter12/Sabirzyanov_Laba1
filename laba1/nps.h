@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include <vector>
+#include <unordered_map>
 class nps
 {
 public:
@@ -21,7 +21,7 @@ private:
 
 
 nps AddNewNPS();
-void ShowAllNPS(std::vector<nps> all_nps);
-void EditNPS(std::vector<nps>& all_nps);
-void NPSToFile(std::vector<nps> all_nps, std::ofstream& file);
-std::vector<nps> NPSFromFile(std:: ifstream& file);
+void ShowAllNPS(std::unordered_map<int, nps>  all_nps);
+void EditNPS(std::unordered_map<int, nps>& all_nps);
+void NPSToFile(std::unordered_map<int, nps>  all_nps, std::ofstream& file);
+std::unordered_map<int, nps>  NPSFromFile(std:: ifstream& file);

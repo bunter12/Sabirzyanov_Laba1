@@ -2,20 +2,32 @@
 #include <string>
 #include "pipeline.h"
 #include "nps.h"
-#include <vector>
 #include <fstream>
 
 using namespace std;
 
+void comeback() {
+	string k;
+	cout << endl << "Введите 0 чтобы вернуться в меню" << endl;
+	getline(cin, k);
+	while (k != "0") {
+		cout << "Введите 0 чтобы вернуться в меню" << endl;
+		getline(cin, k);
+	}
+}
+void NoOneObject() {
+	cout << "Нет объектов"<<endl;
+}
+
 int main() {
 	setlocale(LC_ALL, "Russian");
 	string input;
-	vector<nps> all_nps;
+	unordered_map<int,nps> all_nps;
 	int a;
 	pipeline pipe;
 	string k;
 	nps nps;
-	vector<pipeline> all_pipeline;
+	unordered_map<int,pipeline> all_pipeline;
 	while(true){
 		system("cls");
 		cout << "Выберите действие:" << endl;
@@ -27,7 +39,7 @@ int main() {
 		cout << "6. Сохранить в файл" << endl;
 		cout << "7. Загрузить из файла" << endl;
 		cout << "0. Закончить работу" << endl;
-		cin >> input;
+		getline(cin, input);
 		try {
 			a = stoi(input);
 		}
@@ -40,44 +52,38 @@ int main() {
 		case 1:
 			system("cls");
 			pipe = AddNewPipe();
-			all_pipeline.push_back(pipe);
+			all_pipeline[all_pipeline.size()] = pipe;
 			break;
 		case 2:
 			system("cls");
 			nps = AddNewNPS();
-			all_nps.push_back(nps);
+			all_nps[all_nps.size()] = nps;
 			break;
 		case 3:
 			system("cls");
-			ShowAllPipe(all_pipeline);
-			cout << endl << endl;
-			ShowAllNPS(all_nps);
-			cout <<endl<<endl<< "Введите 0 чтобы вернуться в меню" << endl;
-			cin >> k;
-			while (k != "0") {
-				cout << "Введите 0 чтобы вернуться в меню" << endl;
-				cin >> k;
+			if (all_nps.size() == 0 and all_pipeline.size() == 0)
+				NoOneObject();
+			else {
+				ShowAllPipe(all_pipeline);
+				ShowAllNPS(all_nps);
 			}
+			comeback();
 			break;
 		case 4:
 			system("cls");
-			EditPipe(all_pipeline);
-			cout << endl << endl << "Введите 0 чтобы вернуться в меню" << endl;
-			cin >> k;
-			while (k != "0") {
-				cout << "Введите 0 чтобы вернуться в меню" << endl;
-				cin >> k;
-			}
+			if (all_pipeline.size() == 0)
+				NoOneObject();
+			else
+				EditPipe(all_pipeline);
+			comeback();
 			break;
 		case 5:
 			system("cls");
-			EditNPS(all_nps);
-			cout << endl << endl << "Введите 0 чтобы вернуться в меню" << endl;
-			cin >> k;
-			while (k != "0") {
-				cout << "Введите 0 чтобы вернуться в меню" << endl;
-				cin >> k;
-			}
+			if (all_nps.size() == 0)
+				NoOneObject();
+			else
+				EditNPS(all_nps);
+			comeback();
 			break;
 		case 6: {
 			system("cls");
@@ -86,12 +92,7 @@ int main() {
 			NPSToFile(all_nps, file);
 			file.close();
 			cout << "Успешно записано в файл"<<endl;
-			cout << "Введите 0 чтобы вернуться в меню" << endl;
-			cin >> k;
-			while (k != "0") {
-				cout << "Введите 0 чтобы вернуться в меню" << endl;
-				cin >> k;
-			}
+			comeback();
 		}
 			break;
 		case 7:
@@ -100,24 +101,14 @@ int main() {
 			ifstream file("text.txt");
 			if (!file.is_open()) {
 				cout << "Нет файла для записи данных" << endl;
-				cout << "Введите 0 чтобы вернуться в меню" << endl;
-				cin >> k;
-				while (k != "0") {
-					cout << "Введите 0 чтобы вернуться в меню" << endl;
-					cin >> k;
-				}
+				comeback();
 				continue;
 			}
 			all_pipeline = PipeFromFile(file);
 			all_nps = NPSFromFile(file);
 			file.close();
 			cout << "Успешно записаны данные из файла" << endl;
-			cout << "Введите 0 чтобы вернуться в меню" << endl;
-			cin >> k;
-			while (k != "0") {
-				cout << "Введите 0 чтобы вернуться в меню" << endl;
-				cin >> k;
-			}
+			comeback();
 		}
 			break;
 		case 0:

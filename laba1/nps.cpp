@@ -47,36 +47,35 @@ float nps::GetEffictivity()
 
 nps AddNewNPS() {
 	cout << "Введите название НПС(КС):" << endl;
-	string n;
-	cin >> n;
+	string input;
+	getline(cin, input);
 	nps newNPS;
-	newNPS.SetName(n);
+	newNPS.SetName(input);
 	cout << "Введите общее количество цехов:" << endl;
-	string len;
-	cin >> len;
-	while (!is_number(len)) {
+	getline(cin, input);
+	while (!is_number(input) or stoi(input) == 0) {
 		cout << "Введите число" << endl;
-		cin >> len;
+		getline(cin, input);
 	}
-	newNPS.SetAll_ceh(stoi(len));
+	newNPS.SetAll_ceh(stoi(input));
 	cout << "Введите количество работающих цехов:" << endl;
-	cin >> len;
-	while (!is_number(len) or stoi(len)>newNPS.GetAll_ceh()) {
+	getline(cin, input);
+	while (!is_number(input) or stoi(input)>newNPS.GetAll_ceh()) {
 		cout << "Введите число меньшее общего количества цехов" << endl;
-		cin >> len;
+		getline(cin, input);
 	}
-	newNPS.SetActive_ceh(stoi(len));
+	newNPS.SetActive_ceh(stoi(input));
 	cout << "Укажите эффективность станции:" << endl;
-	cin >> len;
-	while (!is_number(len)) {
+	getline(cin, input);
+	while (!is_number(input)) {
 		cout << "Введите число" << endl;
-		cin >> len;
+		getline(cin, input);
 	}
-	newNPS.SetEffictivity(stof(len));
+	newNPS.SetEffictivity(stof(input));
 	return newNPS;
 }
 
-void ShowAllNPS(vector<nps> all_nps)
+void ShowAllNPS(unordered_map<int, nps> all_nps)
 {
 	for (int i = 0; i < all_nps.size(); i++) {
 		cout << i + 1 << " НПС" << endl;
@@ -87,44 +86,44 @@ void ShowAllNPS(vector<nps> all_nps)
 	}
 }
 
-void EditNPS(std::vector<nps>& all_nps)
+void EditNPS(std::unordered_map<int, nps>& all_nps)
 {
 	ShowAllNPS(all_nps);
 	string n;
 	cout << "Какую НПС изменить?" << endl;
-	cin >> n;
-	while (!is_number(n) or all_nps.size() < stoi(n) or stoi(n) < 0) {
+	getline(cin, n);
+	while (!is_number(n) or all_nps.size() < stoi(n) or stoi(n) < 0 or stoi(n)==0) {
 		cout << "Введите корректное число" << endl;
-		cin >> n;
+		getline(cin, n);
 	}
 	int i = stoi(n)-1;
 	cout << "Введите число 1, чтобы включить цехи" << endl << "0, чтобы выключить"<<endl;
-	cin >> n;
+	getline(cin, n);
 	while(n!="0" and n!="1"){
 		cout << "Введите 1 или 0:"<<endl;
-		cin >> n;
+		getline(cin, n);
 	}
 	if (n == "1") {
 		cout << "Сколько цехов:" << endl;
-		cin >> n;
+		getline(cin, n);
 		while (stoi(n) < 0 or !is_number(n) or stoi(n) > (all_nps[i].GetAll_ceh() - all_nps[i].GetActive_ceh())) {
 			cout << "Введите число меньшее невключенных цехов" << endl;
-			cin >> n;
+			getline(cin, n);
 		}
 		all_nps[i].SetActive_ceh(all_nps[i].GetActive_ceh() + stoi(n));
 	}
 	else {
 		cout << "Сколько цехов:" << endl;
-		cin >> n;
+		getline(cin, n);
 		while (stoi(n) < 0 or !is_number(n) or stoi(n) > (all_nps[i].GetActive_ceh())) {
 			cout << "Введите число меньшее включенных цехов" << endl;
-			cin >> n;
+			getline(cin, n);
 		}
 		all_nps[i].SetActive_ceh(all_nps[i].GetActive_ceh() - stoi(n));
 	}
 }
 
-void NPSToFile(std::vector<nps> all_nps, std::ofstream& file)
+void NPSToFile(std::unordered_map<int, nps> all_nps, std::ofstream& file)
 {
 	file << all_nps.size()<<endl;
 	for (int i = 0; i < all_nps.size(); i++) {
@@ -135,23 +134,23 @@ void NPSToFile(std::vector<nps> all_nps, std::ofstream& file)
 	}
 }
 
-vector<nps> NPSFromFile(ifstream& file)
+unordered_map<int, nps> NPSFromFile(ifstream& file)
 {
-	vector<nps> all_nps;
+	unordered_map<int, nps> all_nps;
 	string n;
-	file >> n;
+	getline(file, n);
 	int len = stoi(n);
 	for (int i = 0; i <len; i++) {
 		nps new_nps;
-		file >> n;
+		getline(file, n);
 		new_nps.SetName(n);
-		file >> n;
+		getline(file, n);
 		new_nps.SetActive_ceh(stoi(n));
-		file >> n;
+		getline(file, n);
 		new_nps.SetAll_ceh(stoi(n));
-		file >> n;
+		getline(file, n);
 		new_nps.SetEffictivity(stoi(n));
-		all_nps.push_back(new_nps);
+		all_nps[i] = new_nps ;
 	}
 	return all_nps;
 }
