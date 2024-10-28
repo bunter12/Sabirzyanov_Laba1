@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void comeback() {
+void backToMenu() {
 	string k;
 	cout << endl << "Введите 0 чтобы вернуться в меню" << endl;
 	getline(cin, k);
@@ -51,13 +51,13 @@ int main() {
 		{
 		case 1:
 			system("cls");
-			pipe = AddNewPipe();
-			all_pipeline[all_pipeline.size()] = pipe;
+			cin >> pipe;
+			all_pipeline[all_pipeline.size()+1] = pipe;
 			break;
 		case 2:
 			system("cls");
-			nps = AddNewNPS();
-			all_nps[all_nps.size()] = nps;
+			cin >> nps;
+			all_nps[all_nps.size()+1] = nps;
 			break;
 		case 3:
 			system("cls");
@@ -67,7 +67,7 @@ int main() {
 				ShowAllPipe(all_pipeline);
 				ShowAllNPS(all_nps);
 			}
-			comeback();
+			backToMenu();
 			break;
 		case 4:
 			system("cls");
@@ -75,7 +75,7 @@ int main() {
 				NoOneObject();
 			else
 				EditPipe(all_pipeline);
-			comeback();
+			backToMenu();
 			break;
 		case 5:
 			system("cls");
@@ -83,32 +83,38 @@ int main() {
 				NoOneObject();
 			else
 				EditNPS(all_nps);
-			comeback();
+			backToMenu();
 			break;
 		case 6: {
 			system("cls");
-			ofstream file("text.txt");
+			cout << "Введите название файла:"<<endl;
+			string filename;
+			getline(cin, filename);
+			ofstream file(filename+".txt");
 			PipeToFile(all_pipeline, file);
 			NPSToFile(all_nps, file);
 			file.close();
 			cout << "Успешно записано в файл"<<endl;
-			comeback();
+			backToMenu();
 		}
 			break;
 		case 7:
 		{
 			system("cls");
-			ifstream file("text.txt");
+			cout << "Введите название файла:" << endl;
+			string filename;
+			getline(cin, filename);
+			ifstream file(filename+".txt");
 			if (!file.is_open()) {
 				cout << "Нет файла для записи данных" << endl;
-				comeback();
+				backToMenu();
 				continue;
 			}
 			all_pipeline = PipeFromFile(file);
 			all_nps = NPSFromFile(file);
 			file.close();
 			cout << "Успешно записаны данные из файла" << endl;
-			comeback();
+			backToMenu();
 		}
 			break;
 		case 0:

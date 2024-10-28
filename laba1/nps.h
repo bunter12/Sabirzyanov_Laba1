@@ -12,6 +12,8 @@ public:
 	int GetAll_ceh();
 	int GetActive_ceh();
 	float GetEffictivity();
+	friend std::ostream& operator << (std::ostream& out, nps nps);
+	friend std::istream& operator >> (std::istream& in, nps& nps);
 private:
 	std::string name;
 	int all_ceh;
@@ -19,8 +21,6 @@ private:
 	float effictivity;
 };
 
-
-nps AddNewNPS();
 void ShowAllNPS(std::unordered_map<int, nps>  all_nps);
 void EditNPS(std::unordered_map<int, nps>& all_nps);
 void NPSToFile(std::unordered_map<int, nps>  all_nps, std::ofstream& file);

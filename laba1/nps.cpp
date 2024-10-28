@@ -45,45 +45,50 @@ float nps::GetEffictivity()
 	return effictivity;
 }
 
-nps AddNewNPS() {
+std::ostream& operator<<(std::ostream& out, nps nps)
+{
+	cout << "Название: " << nps.GetName() << endl;
+	cout << "Общее количество цехов: " << nps.GetAll_ceh() << endl;
+	cout << "Количство цехов в работе: " << nps.GetActive_ceh() << endl;
+	cout << "Эффективность НПС: " << nps.GetEffictivity() << endl;
+	return out;
+}
+
+std::istream& operator>>(std::istream& in, nps& nps)
+{
 	cout << "Введите название НПС(КС):" << endl;
 	string input;
-	getline(cin, input);
-	nps newNPS;
-	newNPS.SetName(input);
+	getline(in, input);
+	nps.SetName(input);
 	cout << "Введите общее количество цехов:" << endl;
-	getline(cin, input);
+	getline(in, input);
 	while (!is_number(input) or stoi(input) == 0) {
 		cout << "Введите число" << endl;
-		getline(cin, input);
+		getline(in, input);
 	}
-	newNPS.SetAll_ceh(stoi(input));
+	nps.SetAll_ceh(stoi(input));
 	cout << "Введите количество работающих цехов:" << endl;
-	getline(cin, input);
-	while (!is_number(input) or stoi(input)>newNPS.GetAll_ceh()) {
+	getline(in, input);
+	while (!is_number(input) or stoi(input) > nps.GetAll_ceh()) {
 		cout << "Введите число меньшее общего количества цехов" << endl;
-		getline(cin, input);
+		getline(in, input);
 	}
-	newNPS.SetActive_ceh(stoi(input));
+	nps.SetActive_ceh(stoi(input));
 	cout << "Укажите эффективность станции:" << endl;
 	getline(cin, input);
 	while (!is_number(input)) {
 		cout << "Введите число" << endl;
-		getline(cin, input);
+		getline(in, input);
 	}
-	newNPS.SetEffictivity(stof(input));
-	return newNPS;
+	nps.SetEffictivity(stof(input));
+	return in;
 }
 
 void ShowAllNPS(unordered_map<int, nps> all_nps)
 {
-	for (int i = 0; i < all_nps.size(); i++) {
-		cout << i + 1 << " НПС" << endl;
-		cout << "Название: " << all_nps[i].GetName() << endl;
-		cout << "Общее количество цехов: " << all_nps[i].GetAll_ceh() << endl;
-		cout << "Количство цехов в работе: " << all_nps[i].GetActive_ceh() << endl;
-		cout << "Эффективность НПС: " << all_nps[i].GetEffictivity() << endl;
-	}
+	for (pair<int, nps> i : all_nps)
+		cout << i.first << " НПС" << endl << i.second;
+	
 }
 
 void EditNPS(std::unordered_map<int, nps>& all_nps)

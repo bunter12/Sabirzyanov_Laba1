@@ -11,6 +11,8 @@ public:
 	int GetLenght();
 	int GetDiametr();
 	bool GetRepair();
+	friend std::ostream& operator << (std::ostream& out, pipeline pipe);
+	friend std::istream& operator >> (std::istream& in, pipeline& pipe);
 private:
 	std::string name;
 	int lenght;
@@ -18,7 +20,6 @@ private:
 	bool repair;
 };
 
-pipeline AddNewPipe();
 bool is_number(std::string s);
 void ShowAllPipe(std::unordered_map<int,pipeline> all_pipe);
 void EditPipe(std::unordered_map<int, pipeline>&all_pipe);

@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <map>
 
 using namespace std;
 
@@ -11,6 +12,12 @@ bool is_number(std::string s) {
 			return 0;
 	}
 	return 1;
+}
+
+void ShowAllPipe(std::unordered_map<int, pipeline> all_pipe)
+{
+	for (pair<int, pipeline> i : all_pipe) 
+		cout << i.first <<" труба"<<endl<<i.second;
 }
 
 
@@ -54,48 +61,47 @@ bool pipeline::GetRepair()
 	return repair;
 }
 
-pipeline AddNewPipe() {
-	cout<<"Введите название трубы:"<<endl;
-	string input;
-	getline(cin, input);
-	pipeline newPipe;
-	newPipe.SetName(input);
-	cout << "Введите длину трубы:" << endl;
-	getline(cin, input);
-	while (!is_number(input) or stoi(input)==0) {
-		cout << "Введите число" << endl;
-		getline(cin, input);
-	}
-	newPipe.SetLenght(stoi(input));
-	cout << "Введите диаметр трубы:" << endl;
-	getline(cin, input);
-	while (!is_number(input) or stoi(input) == 0) {
-		cout << "Введите число" << endl;
-		getline(cin, input);
-	}
-	newPipe.SetDiametr(stoi(input));
-	cout << "Нужно ли её починить(1-да,0-нет):" << endl;
-	getline(cin, input);
-	while (input != "0" and input != "1") {
-		cout << "Введите 1 или 0" << endl;
-		getline(cin, input);
-	}
-	return newPipe;
+ostream& operator<<(std::ostream& out, pipeline pipe)
+{
+	cout << "Название: " << pipe.GetName() << endl;
+	cout << "Длина трубы: " << pipe.GetLenght() << endl;
+	cout << "Диаметр трубы: " << pipe.GetDiametr() << endl;
+	if (pipe.GetRepair() == 1)
+		cout << "Требуется ремонт" << endl;
+	else
+		cout << "Ремонт не требуется" << endl;
+	return out;
 }
 
-void ShowAllPipe(unordered_map<int, pipeline>  all_pipe)
+istream& operator>>(std::istream& in, pipeline& pipe)
 {
-	for (int i = 0; i < all_pipe.size(); i++) {
-		cout << i + 1 << " труба"<<endl;
-		cout << "Название: " << all_pipe[i].GetName() << endl;
-		cout << "Длина трубы: " << all_pipe[i].GetLenght() << endl;
-		cout << "Диаметр трубы: " << all_pipe[i].GetDiametr() << endl;
-		if (all_pipe[i].GetRepair() == 1)
-			cout << "Требуется ремонт" << endl;
-		else
-			cout << "Ремонт не требуется" << endl;
+	cout << "Введите название трубы:" << endl;
+	string input;
+	getline(in, input);
+	pipe.SetName(input);
+	cout << "Введите длину трубы:" << endl;
+	getline(in, input);
+	while (!is_number(input) or stoi(input) == 0) {
+		cout << "Введите число" << endl;
+		getline(in, input);
 	}
+	pipe.SetLenght(stoi(input));
+	cout << "Введите диаметр трубы:" << endl;
+	getline(in, input);
+	while (!is_number(input) or stoi(input) == 0) {
+		cout << "Введите число" << endl;
+		getline(in, input);
+	}
+	pipe.SetDiametr(stoi(input));
+	cout << "Нужно ли её починить(1-да,0-нет):" << endl;
+	getline(in, input);
+	while (input != "0" and input != "1") {
+		cout << "Введите 1 или 0" << endl;
+		getline(in, input);
+	}
+	return in;
 }
+
 
 void EditPipe(unordered_map<int, pipeline>& all_pipe) {
 	ShowAllPipe(all_pipe);
