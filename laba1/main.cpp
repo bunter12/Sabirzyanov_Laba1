@@ -38,6 +38,7 @@ int main() {
 		cout << "5. Редактировать НПС(КС)" << endl;
 		cout << "6. Сохранить в файл" << endl;
 		cout << "7. Загрузить из файла" << endl;
+		cout << "8. Найти трубы по признаку" << endl;
 		cout << "0. Закончить работу" << endl;
 		getline(cin, input);
 		try {
@@ -116,6 +117,11 @@ int main() {
 			cout << "Успешно записаны данные из файла" << endl;
 			backToMenu();
 		}
+			break;
+		case 8:
+			system("cls");
+			SearchAndEditPipe(all_pipeline);
+			backToMenu();
 			break;
 		case 0:
 			exit(0);

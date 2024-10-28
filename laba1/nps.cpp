@@ -131,7 +131,7 @@ void EditNPS(std::unordered_map<int, nps>& all_nps)
 void NPSToFile(std::unordered_map<int, nps> all_nps, std::ofstream& file)
 {
 	file << all_nps.size()<<endl;
-	for (int i = 0; i < all_nps.size(); i++) {
+	for (int i = 1; i <= all_nps.size(); i++) {
 		file << all_nps[i].GetName() << endl;
 		file << all_nps[i].GetAll_ceh() << endl;
 		file << all_nps[i].GetActive_ceh() << endl;
@@ -155,7 +155,7 @@ unordered_map<int, nps> NPSFromFile(ifstream& file)
 		new_nps.SetAll_ceh(stoi(n));
 		getline(file, n);
 		new_nps.SetEffictivity(stoi(n));
-		all_nps[i] = new_nps ;
+		all_nps[i+1] = new_nps ;
 	}
 	return all_nps;
 }

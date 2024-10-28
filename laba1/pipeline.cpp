@@ -14,6 +14,11 @@ bool is_number(std::string s) {
 	return 1;
 }
 
+bool is_binNumber(std::string s)
+{
+	return (s == "0" or s == "1");
+}
+
 void ShowAllPipe(std::unordered_map<int, pipeline> all_pipe)
 {
 	for (pair<int, pipeline> i : all_pipe) 
@@ -102,6 +107,10 @@ istream& operator>>(std::istream& in, pipeline& pipe)
 	return in;
 }
 
+void editRepairStatus(pipeline& p) {
+	p.SetRepair(1 - p.GetRepair());
+}
+
 void EditPipe(unordered_map<int, pipeline>& all_pipe) {
 	ShowAllPipe(all_pipe);
 	string n;
@@ -111,14 +120,14 @@ void EditPipe(unordered_map<int, pipeline>& all_pipe) {
 		cout << "¬ведите корректное число" << endl;
 		getline(cin, n);
 	}
-	all_pipe[stoi(n) - 1].SetRepair(1 - all_pipe[stoi(n)-1].GetRepair());
+	editRepairStatus(all_pipe[stoi(n) - 1]);
 	cout << "”спешно изменено";
 }
 
 void PipeToFile(std::unordered_map<int, pipeline> all_pipe, std::ofstream& file)
 {
 	file << all_pipe.size()<<endl;
-	for (int i = 0; i < all_pipe.size(); i++) {
+	for (int i = 1; i <= all_pipe.size(); i++) {
 		file << all_pipe[i].GetName()<<endl;
 		file << all_pipe[i].GetLenght()<<endl;
 		file << all_pipe[i].GetDiametr() << endl;
@@ -142,7 +151,79 @@ unordered_map<int, pipeline> PipeFromFile(ifstream& file)
 		new_pipe.SetDiametr(stoi(n));
 		getline(file, n);
 		new_pipe.SetRepair(stoi(n));
-		all_pipe[i] = new_pipe;
+		all_pipe[i+1] = new_pipe;
 	}
 	return all_pipe;
+}
+
+bool checkByParametr(pipeline p, string par)
+{
+	return p.GetName().find(par) != std::string::npos;
+}
+
+bool checkByParametr(pipeline p, bool par)
+{
+	return p.GetRepair() == par;
+}
+
+
+template<typename type>
+std::set<int> filterPipeByParametr(std::unordered_map<int, pipeline> all_pipe, type par)
+{
+	std::set<int> pipes;
+	for (auto i : all_pipe) {
+		if(checkByParametr(i.second,par))
+			pipes.insert(i.first);
+	}
+	return pipes;
+}
+
+
+void SearchAndEditPipe(std::unordered_map<int, pipeline>& all_pipe)
+{
+	string input;
+	set<int> selectPipes;
+	cout << "¬ведите 0 если хотите найти трубы по названию" << endl;
+	cout << "¬ведите 1 если хотите найти трубы по их состо€нию" << endl;
+	getline(cin, input);
+	while (!is_binNumber(input)) {
+		cout << "¬ведите 0 или 1";
+		getline(cin, input);
+	}
+	if (!stoi(input)) {
+		system("cls");
+		cout << "¬ведите строку по которой будем искать трубы" << endl;
+		getline(cin, input);
+		selectPipes = filterPipeByParametr(all_pipe, input);
+	}
+	else {
+		system("cls");
+		cout << "¬ведите 0 если хотите найти трубы, которым не нужен ремонт" << endl;
+		cout << "¬ведите 1 если хотите найти трубы, которым нужен ремонт" << endl;
+		getline(cin, input);
+		while (!is_binNumber(input)) {
+			cout << "¬ведите 0 или 1";
+			getline(cin, input);
+		}
+		selectPipes = filterPipeByParametr(all_pipe, input);
+	}
+	if (selectPipes.size() == 0)
+		cout << "Ќе найдены трубы по фильтру" << endl;
+	else {
+		cout << "Ќайдены трубы ";
+		for (int i : selectPipes)
+			cout << i << ",";
+		cout << endl << "¬ведите 0, если хотите изменить им состо€ние"<<endl;
+		cout << "¬ведите 1, если не хотите измен€ть им состо€ние" << endl;
+		getline(cin, input);
+		while (!is_binNumber(input)) {
+			cout << "¬ведите 0 или 1";
+			getline(cin, input);
+		}
+		if (!stoi(input)) {
+			for (int i : selectPipes)
+				editRepairStatus(all_pipe[i]);
+			cout << "”спешно изменено";
+		}
+	}
 }
