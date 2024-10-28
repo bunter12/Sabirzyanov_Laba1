@@ -102,7 +102,6 @@ istream& operator>>(std::istream& in, pipeline& pipe)
 	return in;
 }
 
-
 void EditPipe(unordered_map<int, pipeline>& all_pipe) {
 	ShowAllPipe(all_pipe);
 	string n;
