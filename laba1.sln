@@ -7,12 +7,18 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "laba1", "laba1\laba1.vcxpro
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		1111|x64 = 1111|x64
+		1111|x86 = 1111|x86
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{27A4F051-AFE6-4774-A544-AD92EF2CD5A0}.1111|x64.ActiveCfg = 1111|x64
+		{27A4F051-AFE6-4774-A544-AD92EF2CD5A0}.1111|x64.Build.0 = 1111|x64
+		{27A4F051-AFE6-4774-A544-AD92EF2CD5A0}.1111|x86.ActiveCfg = 1111|Win32
+		{27A4F051-AFE6-4774-A544-AD92EF2CD5A0}.1111|x86.Build.0 = 1111|Win32
 		{27A4F051-AFE6-4774-A544-AD92EF2CD5A0}.Debug|x64.ActiveCfg = Debug|x64
 		{27A4F051-AFE6-4774-A544-AD92EF2CD5A0}.Debug|x64.Build.0 = Debug|x64
 		{27A4F051-AFE6-4774-A544-AD92EF2CD5A0}.Debug|x86.ActiveCfg = Debug|Win32

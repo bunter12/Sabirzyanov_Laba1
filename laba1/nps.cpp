@@ -3,6 +3,8 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <regex>;
+
 using namespace std;
 
 void nps::SetName(string n)
@@ -84,6 +86,29 @@ std::istream& operator>>(std::istream& in, nps& nps)
 	return in;
 }
 
+std::ofstream& operator<<(std::ofstream& out, nps nps)
+{
+	out << nps.GetName() << endl;
+	out << nps.GetAll_ceh() << endl;
+	out << nps.GetActive_ceh() << endl;
+	out << nps.GetEffictivity();
+	return out;
+}
+
+std::ifstream& operator>>(std::ifstream& in, nps& nps)
+{
+	string n;
+	getline(in, n);
+	nps.SetName(n);
+	getline(in, n);
+	nps.SetAll_ceh(stoi(n));
+	getline(in, n);
+	nps.SetActive_ceh(stoi(n));
+	getline(in, n);
+	nps.SetEffictivity(stoi(n));
+	return in;
+}
+
 void ShowAllNPS(unordered_map<int, nps> all_nps)
 {
 	for (pair<int, nps> i : all_nps)
@@ -91,51 +116,95 @@ void ShowAllNPS(unordered_map<int, nps> all_nps)
 	
 }
 
-void EditNPS(std::unordered_map<int, nps>& all_nps)
-{
-	ShowAllNPS(all_nps);
-	string n;
-	cout << "Какую НПС изменить?" << endl;
-	getline(cin, n);
-	while (!is_number(n) or all_nps.size() < stoi(n) or stoi(n) < 0 or stoi(n)==0) {
-		cout << "Введите корректное число" << endl;
-		getline(cin, n);
+set<int> selectNPSByID(unordered_map<int, nps> all_nps) {
+	cout << "Введите id через пробел" << endl;
+	string input;
+	getline(cin, input);
+	auto lastPair = all_nps.end();
+	set<int>selectId;
+	lastPair--;
+	int id;
+	regex num{ "[+\\-]{0,1}\\d+" };
+	vector<int> numbers;
+	transform(std::sregex_token_iterator{ input.cbegin(), input.cend(), num }, {}, back_inserter(numbers), [](const auto& val) { return std::stoi(val.str()); });
+	for (auto i : numbers) {
+		if (i > 0 and (i <= lastPair->first)) {
+			if (selectId.count(i) == 0)
+				selectId.insert(i);
+		}
 	}
-	int i = stoi(n)-1;
-	cout << "Введите число 1, чтобы включить цехи" << endl << "0, чтобы выключить"<<endl;
+	return selectId;
+}
+
+void editNPSByCeh(nps& p) {
+	system("cls");
+	cout << p;
+	string n;
+	cout << "Введите число 1, чтобы включить цехи" << endl << "0, чтобы выключить" << endl;
 	getline(cin, n);
-	while(n!="0" and n!="1"){
-		cout << "Введите 1 или 0:"<<endl;
+	while (n != "0" and n != "1") {
+		cout << "Введите 1 или 0:" << endl;
 		getline(cin, n);
 	}
 	if (n == "1") {
 		cout << "Сколько цехов:" << endl;
 		getline(cin, n);
-		while (stoi(n) < 0 or !is_number(n) or stoi(n) > (all_nps[i].GetAll_ceh() - all_nps[i].GetActive_ceh())) {
+		while (stoi(n) < 0 or !is_number(n) or stoi(n) > (p.GetAll_ceh() - p.GetActive_ceh())) {
 			cout << "Введите число меньшее невключенных цехов" << endl;
 			getline(cin, n);
 		}
-		all_nps[i].SetActive_ceh(all_nps[i].GetActive_ceh() + stoi(n));
+		p.SetActive_ceh(p.GetActive_ceh() + stoi(n));
 	}
 	else {
 		cout << "Сколько цехов:" << endl;
 		getline(cin, n);
-		while (stoi(n) < 0 or !is_number(n) or stoi(n) > (all_nps[i].GetActive_ceh())) {
+		while (stoi(n) < 0 or !is_number(n) or stoi(n) > (p.GetActive_ceh())) {
 			cout << "Введите число меньшее включенных цехов" << endl;
 			getline(cin, n);
 		}
-		all_nps[i].SetActive_ceh(all_nps[i].GetActive_ceh() - stoi(n));
+		p.SetActive_ceh(p.GetActive_ceh() - stoi(n));
+	}
+}
+
+void EditNPS(unordered_map<int, nps>& all_nps)
+{
+	string n;
+	cout << "Если хотите найти НПС по фильтру введите 0" << endl;
+	cout << "Если хотите выбрать НПС по id введите 1" << endl;
+	int in = getBinNumber();
+	set<int> selectId;
+	if (in)
+		selectId = selectNPSByID(all_nps);
+	else
+		selectId = selectNPSByFilter(all_nps);
+	if (!selectId.empty()) {
+		cout << "Выбраны НПС с id ";
+		for (auto i : selectId)
+			cout << i << " ";
+		cout << endl << "Если хотите удалить выбранные НПС введите 0" << endl;
+		cout << "Если хотите изменить количество работающих цехов НПС введите 1" << endl;
+		in = getBinNumber();
+		if (in) {
+			for (auto i : selectId)
+				editNPSByCeh(all_nps[i]);
+		}
+		else {
+			for (auto i : selectId)
+				all_nps.erase(i);
+		}
+		cout << "Успешно изменено";
+	}
+	else {
+		cout << "Не найденны трубы";
 	}
 }
 
 void NPSToFile(std::unordered_map<int, nps> all_nps, std::ofstream& file)
 {
 	file << all_nps.size()<<endl;
-	for (int i = 1; i <= all_nps.size(); i++) {
-		file << all_nps[i].GetName() << endl;
-		file << all_nps[i].GetAll_ceh() << endl;
-		file << all_nps[i].GetActive_ceh() << endl;
-		file << all_nps[i].GetEffictivity() << endl;
+	for (auto i:all_nps) {
+		file << i.first<<endl;
+		file << i.second<<endl;
 	}
 }
 
@@ -147,15 +216,59 @@ unordered_map<int, nps> NPSFromFile(ifstream& file)
 	int len = stoi(n);
 	for (int i = 0; i <len; i++) {
 		nps new_nps;
+		int idnps;
 		getline(file, n);
-		new_nps.SetName(n);
-		getline(file, n);
-		new_nps.SetActive_ceh(stoi(n));
-		getline(file, n);
-		new_nps.SetAll_ceh(stoi(n));
-		getline(file, n);
-		new_nps.SetEffictivity(stoi(n));
-		all_nps[i+1] = new_nps ;
+		idnps = stoi(n);
+		file >> new_nps;
+		all_nps[idnps] = new_nps ;
 	}
 	return all_nps;
+}
+
+
+bool checkByParametr(nps p, string par)
+{
+	return p.GetName().find(par) != std::string::npos;
+}
+
+
+
+set<int> selectNPSByFilter(unordered_map<int, nps> all_nps) {
+	set<int> selectId;
+	cout << "Введите 0 если хотите найти НПС по названию" << endl;
+	cout << "Введите 1 если хотите найти НПС по проценту незадейственных цехов" << endl;
+	int in = getBinNumber();
+	string input;
+	if (!in) {
+		system("cls");
+		cout << "Введите строку по которой будем искать НПС" << endl;
+		getline(cin, input);
+		for (auto i : all_nps) {
+			if (checkByParametr(i.second, input))
+				selectId.insert(i.first);
+		}
+	}
+	else {
+		system("cls");
+		cout << "Введите процент незадейственных цехов" << endl;
+		getline(cin,input);
+		while (!is_number(input)) {
+			cout << "Введите число" << endl;
+			getline(cin, input);
+		}
+		cout << "Введите 0 если хотите найти НПС с меньним процентом незадейственных цехов" << endl;
+		cout << "Введите 1 если хотите найти НПС с большим процентом незадейственных цехов" << endl;
+		in = getBinNumber();
+		for (auto i : all_nps) {
+			if (in) {
+				if (((double)i.second.GetActive_ceh() / (double)i.second.GetAll_ceh())*100 >= stoi(input))
+					selectId.insert(i.first);
+			}
+			else {
+				if (((double)i.second.GetActive_ceh() / (double)i.second.GetAll_ceh())*100 <= stoi(input))
+					selectId.insert(i.first);
+			}
+		}
+	}
+	return selectId;
 }

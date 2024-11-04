@@ -15,6 +15,8 @@ public:
 	float GetEffictivity();
 	friend std::ostream& operator << (std::ostream& out, nps nps);
 	friend std::istream& operator >> (std::istream& in, nps& nps);
+	friend std::ofstream& operator << (std::ofstream& out, nps nps);
+	friend std::ifstream& operator >> (std::ifstream& in, nps& nps);
 private:
 	std::string name;
 	int all_ceh;
@@ -23,6 +25,10 @@ private:
 };
 
 void ShowAllNPS(std::unordered_map<int, nps>  all_nps);
+std::set<int> selectNPSByID(std::unordered_map<int, nps> all_nps);
+void editNPSByCeh(nps& p);
 void EditNPS(std::unordered_map<int, nps>& all_nps);
 void NPSToFile(std::unordered_map<int, nps>  all_nps, std::ofstream& file);
 std::unordered_map<int, nps>  NPSFromFile(std:: ifstream& file);
+bool checkByParametr(nps p, std::string par);
+std::set<int> selectNPSByFilter(std::unordered_map<int, nps> all_nps);

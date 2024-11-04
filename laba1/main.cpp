@@ -1,9 +1,11 @@
+#include "nps.h"
+#include "pipeline.h"
+#include "utils.h"
+#include <chrono>
+#include <format>
+#include <fstream>
 #include <iostream>
 #include <string>
-#include "pipeline.h"
-#include "nps.h"
-#include <fstream>
-
 using namespace std;
 
 void backToMenu() {
@@ -23,11 +25,18 @@ int main() {
 	setlocale(LC_ALL, "Russian");
 	string input;
 	unordered_map<int,nps> all_nps;
+	int idpipes=0;
+	int idnps=0;
 	int a;
 	pipeline pipe;
 	string k;
 	nps nps;
 	unordered_map<int,pipeline> all_pipeline;
+	redirect_output_wrapper cerr_out(cerr);
+	string time = format("{:%d_%m_%Y %H_%M_%OS}", chrono::system_clock::now());
+	ofstream logfile("log_" + time+".txt");
+	if (logfile)
+		cerr_out.redirect(logfile);
 	while(true){
 		system("cls");
 		cout << "Выберите действие:" << endl;
@@ -38,7 +47,6 @@ int main() {
 		cout << "5. Редактировать НПС(КС)" << endl;
 		cout << "6. Сохранить в файл" << endl;
 		cout << "7. Загрузить из файла" << endl;
-		cout << "8. Найти трубы по признаку" << endl;
 		cout << "0. Закончить работу" << endl;
 		getline(cin, input);
 		try {
@@ -53,12 +61,12 @@ int main() {
 		case 1:
 			system("cls");
 			cin >> pipe;
-			all_pipeline[all_pipeline.size()+1] = pipe;
+			all_pipeline[++idpipes] = pipe;
 			break;
 		case 2:
 			system("cls");
 			cin >> nps;
-			all_nps[all_nps.size()+1] = nps;
+			all_nps[++idnps] = nps;
 			break;
 		case 3:
 			system("cls");
@@ -92,6 +100,8 @@ int main() {
 			string filename;
 			getline(cin, filename);
 			ofstream file(filename+".txt");
+			file << idpipes << endl;
+			file << idnps << endl;
 			PipeToFile(all_pipeline, file);
 			NPSToFile(all_nps, file);
 			file.close();
@@ -111,17 +121,17 @@ int main() {
 				backToMenu();
 				continue;
 			}
+			string input;
+			getline(file, input);
+			idpipes = stoi(input);
+			getline(file, input);
+			idnps = stoi(input);
 			all_pipeline = PipeFromFile(file);
 			all_nps = NPSFromFile(file);
 			file.close();
 			cout << "Успешно записаны данные из файла" << endl;
 			backToMenu();
 		}
-			break;
-		case 8:
-			system("cls");
-			SearchAndEditPipe(all_pipeline);
-			backToMenu();
 			break;
 		case 0:
 			exit(0);

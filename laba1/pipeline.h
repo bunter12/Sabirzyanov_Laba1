@@ -14,6 +14,8 @@ public:
 	bool GetRepair();
 	friend std::ostream& operator << (std::ostream& out, pipeline pipe);
 	friend std::istream& operator >> (std::istream& in, pipeline& pipe);
+	friend std::ofstream& operator << (std::ofstream& out, pipeline& x);
+	friend std::ifstream& operator >> (std::ifstream& in, pipeline& x);
 private:
 	std::string name;
 	int lenght;
@@ -22,14 +24,14 @@ private:
 };
 
 bool is_number(std::string s);
-bool is_binNumber(std::string s);
+int getBinNumber();
 void ShowAllPipe(std::unordered_map<int,pipeline> all_pipe);
 void EditPipe(std::unordered_map<int, pipeline>&all_pipe);
 void PipeToFile(std::unordered_map<int, pipeline>  all_pipe, std::ofstream& file);
 std::unordered_map<int, pipeline>  PipeFromFile(std::ifstream &file);
 bool checkByParametr(pipeline p, std::string par);
 bool checkByParametr(pipeline p, bool par);
+std::set<int> selectPipeByFilter(std::unordered_map<int, pipeline>& all_pipe);
 void editRepairStatus(pipeline& p);
 template<typename type>
 std::set<int> filterPipeByParametr(std::unordered_map<int, pipeline> all_pipe, type par);
-void SearchAndEditPipe(std::unordered_map<int, pipeline>& all_pipe);
