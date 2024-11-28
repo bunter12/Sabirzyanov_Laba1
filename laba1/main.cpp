@@ -1,5 +1,6 @@
 #include "nps.h"
 #include "pipeline.h"
+#include "network.h"
 #include "utils.h"
 #include <chrono>
 #include <format>
@@ -10,19 +11,18 @@ using namespace std;
 
 void backToMenu() {
 	string k;
-	cout << endl << "Введите 0 чтобы вернуться в меню" << endl;
+	cout << endl << "Press 0 to return to menu" << endl;
 	getline(cin, k);
 	while (k != "0") {
-		cout << "Введите 0 чтобы вернуться в меню" << endl;
+		cout << "Press 0 to return to menu" << endl;
 		getline(cin, k);
 	}
 }
 void NoOneObject() {
-	cout << "Нет объектов"<<endl;
+	cout << "No objects found" << endl;
 }
 
 int main() {
-	setlocale(LC_ALL, "Russian");
 	string input;
 	unordered_map<int,nps> all_nps;
 	int idpipes=0;
@@ -32,6 +32,7 @@ int main() {
 	string k;
 	nps nps;
 	unordered_map<int,pipeline> all_pipeline;
+	Network network(all_pipeline,all_nps);
 	redirect_output_wrapper cerr_out(cerr);
 	string time = format("{:%d_%m_%Y %H_%M_%OS}", chrono::system_clock::now());
 	ofstream logfile("log_" + time+".txt");
@@ -39,21 +40,24 @@ int main() {
 		cerr_out.redirect(logfile);
 	while(true){
 		system("cls");
-		cout << "Выберите действие:" << endl;
-		cout << "1. Добавить трубу" << endl;
-		cout << "2. Добавить НПС(КС)" << endl;
-		cout << "3. Просморт всех объектов" << endl;
-		cout << "4. Редактировать трубу" << endl;
-		cout << "5. Редактировать НПС(КС)" << endl;
-		cout << "6. Сохранить в файл" << endl;
-		cout << "7. Загрузить из файла" << endl;
-		cout << "0. Закончить работу" << endl;
+		cout << "Choose action:" << endl;
+		cout << "1. Add pipeline" << endl;
+		cout << "2. Add station (CS)" << endl;
+		cout << "3. View all objects" << endl;
+		cout << "4. Edit pipeline" << endl;
+		cout << "5. Edit station (CS)" << endl;
+		cout << "6. Save to file" << endl;
+		cout << "7. Load from file" << endl;
+		cout << "8. Connect stations in network" << endl;
+		cout << "9. View network" << endl;
+		cout << "10. Topological sort" << endl;
+		cout << "0. Exit" << endl;
 		getline(cin, input);
 		try {
 			a = stoi(input);
 		}
 		catch (invalid_argument e) {
-			cout << "Введите корректное число" << endl;
+			cout << "Enter correct number" << endl;
 			continue;
 		}
 		switch (a)
@@ -96,7 +100,7 @@ int main() {
 			break;
 		case 6: {
 			system("cls");
-			cout << "Введите название файла:"<<endl;
+			cout << "Enter file name:" << endl;
 			string filename;
 			getline(cin, filename);
 			ofstream file(filename+".txt");
@@ -105,19 +109,19 @@ int main() {
 			PipeToFile(all_pipeline, file);
 			NPSToFile(all_nps, file);
 			file.close();
-			cout << "Успешно записано в файл"<<endl;
+			cout << "Objects saved to file" << endl;
 			backToMenu();
 		}
 			break;
 		case 7:
 		{
 			system("cls");
-			cout << "Введите название файла:" << endl;
+			cout << "Enter file name:" << endl;
 			string filename;
 			getline(cin, filename);
 			ifstream file(filename+".txt");
 			if (!file.is_open()) {
-				cout << "Нет файла для записи данных" << endl;
+				cout << "File not found or access denied" << endl;
 				backToMenu();
 				continue;
 			}
@@ -129,15 +133,30 @@ int main() {
 			all_pipeline = PipeFromFile(file);
 			all_nps = NPSFromFile(file);
 			file.close();
-			cout << "Успешно записаны данные из файла" << endl;
+			cout << "Objects loaded from file" << endl;
 			backToMenu();
 		}
 			break;
+		case 8:
+    		system("cls");
+    		network.handleConnect();
+   			backToMenu();
+  			break;
+		case 9:
+    		system("cls");
+    		network.viewNetwork();
+    		backToMenu();
+    		break;
+		case 10:
+    		system("cls");
+    		network.viewTopologicalSort();
+    		backToMenu();
+    		break;
 		case 0:
 			exit(0);
 			break;
 		default:
-			cout << "Введите корректное число" << endl;
+			cout << "Enter correct number" << endl;
 		}
 	}
 }

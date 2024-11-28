@@ -8,10 +8,10 @@ public:
 	void SetLenght(int len);
 	void SetDiametr(int d);
 	void SetRepair(bool r);
-	std::string GetName();
-	int GetLenght();
-	int GetDiametr();
-	bool GetRepair();
+	std::string GetName() const;
+	int GetLenght() const;
+	int GetDiametr() const;
+	bool GetRepair() const;
 	friend std::ostream& operator << (std::ostream& out, pipeline pipe);
 	friend std::istream& operator >> (std::istream& in, pipeline& pipe);
 	friend std::ofstream& operator << (std::ofstream& out, pipeline& x);

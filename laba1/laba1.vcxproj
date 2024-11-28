@@ -143,10 +143,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Network.cpp" />
     <ClCompile Include="nps.cpp" />
     <ClCompile Include="pipeline.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Network.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="nps.h" />
     <ClInclude Include="pipeline.h" />

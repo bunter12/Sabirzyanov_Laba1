@@ -49,37 +49,37 @@ float nps::GetEffictivity()
 
 std::ostream& operator<<(std::ostream& out, nps nps)
 {
-	cout << "Название: " << nps.GetName() << endl;
-	cout << "Общее количество цехов: " << nps.GetAll_ceh() << endl;
-	cout << "Количство цехов в работе: " << nps.GetActive_ceh() << endl;
-	cout << "Эффективность НПС: " << nps.GetEffictivity() << endl;
+	cout << "Name: " << nps.GetName() << endl;
+	cout << "Total workshops: " << nps.GetAll_ceh() << endl;
+	cout << "Working workshops: " << nps.GetActive_ceh() << endl;
+	cout << "Station efficiency: " << nps.GetEffictivity() << endl;
 	return out;
 }
 
 std::istream& operator>>(std::istream& in, nps& nps)
 {
-	cout << "Введите название НПС(КС):" << endl;
+	cout << "Enter station name:" << endl;
 	string input;
 	getline(in, input);
 	nps.SetName(input);
-	cout << "Введите общее количество цехов:" << endl;
+	cout << "Enter total number of workshops:" << endl;
 	getline(in, input);
 	while (!is_number(input) or stoi(input) == 0) {
-		cout << "Введите число" << endl;
+		cout << "Enter number" << endl;
 		getline(in, input);
 	}
 	nps.SetAll_ceh(stoi(input));
-	cout << "Введите количество работающих цехов:" << endl;
+	cout << "Enter number of working workshops:" << endl;
 	getline(in, input);
 	while (!is_number(input) or stoi(input) > nps.GetAll_ceh()) {
-		cout << "Введите число меньшее общего количества цехов" << endl;
+		cout << "Enter number less than total workshops" << endl;
 		getline(in, input);
 	}
 	nps.SetActive_ceh(stoi(input));
-	cout << "Укажите эффективность станции:" << endl;
+	cout << "Enter station efficiency (0-100):" << endl;
 	getline(cin, input);
-	while (!is_number(input)) {
-		cout << "Введите число" << endl;
+	while (!is_number(input) or stoi(input) < 0 or stoi(input) > 100) {
+		cout << "Enter number between 0 and 100" << endl;
 		getline(in, input);
 	}
 	nps.SetEffictivity(stof(input));
@@ -112,12 +112,12 @@ std::ifstream& operator>>(std::ifstream& in, nps& nps)
 void ShowAllNPS(unordered_map<int, nps> all_nps)
 {
 	for (pair<int, nps> i : all_nps)
-		cout << i.first << " НПС" << endl << i.second;
-	
+		cout << i.first << " Station" << endl << i.second;
+
 }
 
 set<int> selectNPSByID(unordered_map<int, nps> all_nps) {
-	cout << "Введите id через пробел" << endl;
+	cout << "Enter station ID to select:" << endl;
 	string input;
 	getline(cin, input);
 	auto lastPair = all_nps.end();
@@ -140,26 +140,26 @@ void editNPSByCeh(nps& p) {
 	system("cls");
 	cout << p;
 	string n;
-	cout << "Введите число 1, чтобы включить цехи" << endl << "0, чтобы выключить" << endl;
+	cout << "Enter 1 to start workshop" << endl << "0 to stop workshop" << endl;
 	getline(cin, n);
 	while (n != "0" and n != "1") {
-		cout << "Введите 1 или 0:" << endl;
+		cout << "Enter 1 or 0:" << endl;
 		getline(cin, n);
 	}
 	if (n == "1") {
-		cout << "Сколько цехов:" << endl;
+		cout << "Enter number:" << endl;
 		getline(cin, n);
 		while (stoi(n) < 0 or !is_number(n) or stoi(n) > (p.GetAll_ceh() - p.GetActive_ceh())) {
-			cout << "Введите число меньшее невключенных цехов" << endl;
+			cout << "Enter number less than available workshops" << endl;
 			getline(cin, n);
 		}
 		p.SetActive_ceh(p.GetActive_ceh() + stoi(n));
 	}
 	else {
-		cout << "Сколько цехов:" << endl;
+		cout << "Enter number:" << endl;
 		getline(cin, n);
 		while (stoi(n) < 0 or !is_number(n) or stoi(n) > (p.GetActive_ceh())) {
-			cout << "Введите число меньшее включенных цехов" << endl;
+			cout << "Enter number less than working workshops" << endl;
 			getline(cin, n);
 		}
 		p.SetActive_ceh(p.GetActive_ceh() - stoi(n));
@@ -169,8 +169,8 @@ void editNPSByCeh(nps& p) {
 void EditNPS(unordered_map<int, nps>& all_nps)
 {
 	string n;
-	cout << "Если хотите найти НПС по фильтру введите 0" << endl;
-	cout << "Если хотите выбрать НПС по id введите 1" << endl;
+	cout << "Enter 0 to select station by name" << endl;
+	cout << "Enter 1 to select station by ID" << endl;
 	int in = getBinNumber();
 	set<int> selectId;
 	if (in)
@@ -178,11 +178,11 @@ void EditNPS(unordered_map<int, nps>& all_nps)
 	else
 		selectId = selectNPSByFilter(all_nps);
 	if (!selectId.empty()) {
-		cout << "Выбраны НПС с id ";
+		cout << "Selected stations with ID ";
 		for (auto i : selectId)
 			cout << i << " ";
-		cout << endl << "Если хотите удалить выбранные НПС введите 0" << endl;
-		cout << "Если хотите изменить количество работающих цехов НПС введите 1" << endl;
+		cout << endl << "Enter 0 to delete selected stations" << endl;
+		cout << "Enter 1 to edit number of working workshops" << endl;
 		in = getBinNumber();
 		if (in) {
 			for (auto i : selectId)
@@ -192,10 +192,10 @@ void EditNPS(unordered_map<int, nps>& all_nps)
 			for (auto i : selectId)
 				all_nps.erase(i);
 		}
-		cout << "Успешно изменено";
+		cout << "Changes applied";
 	}
 	else {
-		cout << "Не найденны трубы";
+		cout << "No stations selected";
 	}
 }
 
@@ -235,13 +235,13 @@ bool checkByParametr(nps p, string par)
 
 set<int> selectNPSByFilter(unordered_map<int, nps> all_nps) {
 	set<int> selectId;
-	cout << "Введите 0 если хотите найти НПС по названию" << endl;
-	cout << "Введите 1 если хотите найти НПС по проценту незадейственных цехов" << endl;
+	cout << "Enter 0 to select stations by name" << endl;
+	cout << "Enter 1 to select stations by efficiency" << endl;
 	int in = getBinNumber();
 	string input;
 	if (!in) {
 		system("cls");
-		cout << "Введите строку по которой будем искать НПС" << endl;
+		cout << "Enter name to select stations:" << endl;
 		getline(cin, input);
 		for (auto i : all_nps) {
 			if (checkByParametr(i.second, input))
@@ -250,14 +250,14 @@ set<int> selectNPSByFilter(unordered_map<int, nps> all_nps) {
 	}
 	else {
 		system("cls");
-		cout << "Введите процент незадейственных цехов" << endl;
+		cout << "Enter efficiency to select stations:" << endl;
 		getline(cin,input);
 		while (!is_number(input)) {
-			cout << "Введите число" << endl;
+			cout << "Enter number" << endl;
 			getline(cin, input);
 		}
-		cout << "Введите 0 если хотите найти НПС с меньним процентом незадейственных цехов" << endl;
-		cout << "Введите 1 если хотите найти НПС с большим процентом незадейственных цехов" << endl;
+		cout << "Enter 0 to select stations with efficiency less than or equal to" << endl;
+		cout << "Enter 1 to select stations with efficiency greater than or equal to" << endl;
 		in = getBinNumber();
 		for (auto i : all_nps) {
 			if (in) {

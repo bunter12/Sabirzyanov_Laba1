@@ -25,7 +25,7 @@ int getBinNumber() {
 	int i;
 	getline(cin, s);
 	while (!is_binNumber(s)) {
-		cout << "Введите 0 или 1"<<endl;
+		cout << "Enter 0 or 1"<<endl;
 		getline(cin, s);
 	}
 	return stoi(s);
@@ -35,7 +35,7 @@ int getBinNumber() {
 void ShowAllPipe(std::unordered_map<int, pipeline> all_pipe)
 {
 	for (pair<int, pipeline> i : all_pipe)
-		cout << i.first <<" труба"<<endl<<i.second;
+		cout << i.first <<" pipeline"<<endl<<i.second;
 }
 
 
@@ -81,40 +81,40 @@ bool pipeline::GetRepair()
 
 ostream& operator<<(std::ostream& out, pipeline pipe)
 {
-	cout << "Название: " << pipe.GetName() << endl;
-	cout << "Длина трубы: " << pipe.GetLenght() << endl;
-	cout << "Диаметр трубы: " << pipe.GetDiametr() << endl;
+	cout << "Name: " << pipe.GetName() << endl;
+	cout << "Length: " << pipe.GetLenght() << endl;
+	cout << "Diameter: " << pipe.GetDiametr() << endl;
 	if (pipe.GetRepair() == 1)
-		cout << "Требуется ремонт" << endl;
+		cout << "Under repair" << endl;
 	else
-		cout << "Ремонт не требуется" << endl;
+		cout << "Not under repair" << endl;
 	return out;
 }
 
 istream& operator>>(std::istream& in, pipeline& pipe)
 {
-	cout << "Введите название трубы:" << endl;
+	cout << "Enter pipeline name:" << endl;
 	string input;
 	getline(in, input);
 	pipe.SetName(input);
-	cout << "Введите длину трубы:" << endl;
+	cout << "Enter the length:" << endl;
 	getline(in, input);
 	while (!is_number(input) or stoi(input) == 0) {
-		cout << "Введите число" << endl;
+		cout << "Enter number" << endl;
 		getline(in, input);
 	}
 	pipe.SetLenght(stoi(input));
-	cout << "Введите диаметр трубы:" << endl;
+	cout << "Choose diameter (only 500, 700, 1000 and 1400):" << endl;
 	getline(in, input);
-	while (!is_number(input) or stoi(input) == 0) {
-		cout << "Введите число" << endl;
+	while (!is_number(input) or stoi(input) == 0 or stoi(input) != 500 and stoi(input) != 700 and stoi(input) != 1000 and stoi(input) != 1400) {
+		cout << "Enter only 500, 700, 1000 or 1400" << endl;
 		getline(in, input);
 	}
 	pipe.SetDiametr(stoi(input));
-	cout << "Нужно ли её починить(1-да,0-нет):" << endl;
+	cout << "Under repair (1-yes, 0-no):" << endl;
 	getline(in, input);
 	while (input != "0" and input != "1") {
-		cout << "Введите 1 или 0" << endl;
+		cout << "Enter 1 or 0" << endl;
 		getline(in, input);
 	}
 	return in;
@@ -148,7 +148,7 @@ void editRepairStatus(pipeline& p) {
 }
 
 set<int> selectPipeById(unordered_map<int, pipeline>& all_pipe) {
-	cout << "Введите id через пробел" << endl;
+	cout << "Enter id of pipeline to select" << endl;
 	string input;
 	getline(cin, input);
 	auto lastPair = all_pipe.end();
@@ -169,8 +169,8 @@ set<int> selectPipeById(unordered_map<int, pipeline>& all_pipe) {
 void EditPipe(unordered_map<int, pipeline>& all_pipe) {
 	ShowAllPipe(all_pipe);
 	string n;
-	cout << "Если хотите найти трубы по фильтру введите 0" << endl;
-	cout << "Если хотите выбрать трубы по id введите 1" << endl;
+	cout << "Enter 0 to select pipeline by name or 1 to select by id" << endl;
+	cout << "Enter 0 to edit pipeline or 1 to delete" << endl;
 	int in = getBinNumber();
 	set<int> selectId;
 	if (in)
@@ -178,11 +178,10 @@ void EditPipe(unordered_map<int, pipeline>& all_pipe) {
 	else
 		selectId = selectPipeByFilter(all_pipe);
 	if (!selectId.empty()) {
-		cout << "Выбраны трубы с id ";
+		cout << "Selected pipelines with id ";
 		for (auto i : selectId)
 			cout << i << " ";
-		cout << endl<<"Если хотите удалить выбранные трубы введите 0" << endl;
-		cout << "Если хотите изменить статус ремонта выбранных труб введите 1" << endl;
+		cout << endl<<"Enter 0 to edit pipeline or 1 to delete" << endl;
 		in = getBinNumber();
 		if (in) {
 			for (auto i : selectId)
@@ -192,10 +191,10 @@ void EditPipe(unordered_map<int, pipeline>& all_pipe) {
 			for (auto i : selectId)
 				all_pipe.erase(i);
 		}
-		cout << "Успешно изменено";
+		cout << "Pipeline edited";
 	}
 	else {
-		cout << "Не найденны трубы";
+		cout << "No pipelines selected";
 	}
 }
 
@@ -251,19 +250,17 @@ set<int> selectPipeByFilter(std::unordered_map<int, pipeline>& all_pipe)
 {
 	string input;
 	set<int> selectPipes;
-	cout << "Введите 0 если хотите найти трубы по названию" << endl;
-	cout << "Введите 1 если хотите найти трубы по их состоянию" << endl;
+	cout << "Enter 0 to select pipeline by name or 1 to select by repair status" << endl;
 	int choose = getBinNumber();
 	if (!choose) {
 		system("cls");
-		cout << "Введите строку по которой будем искать трубы" << endl;
+		cout << "Enter name to select pipeline" << endl;
 		getline(cin, input);
 		selectPipes = filterPipeByParametr(all_pipe, input);
 	}
 	else {
 		system("cls");
-		cout << "Введите 0 если хотите найти трубы, которым не нужен ремонт" << endl;
-		cout << "Введите 1 если хотите найти трубы, которым нужен ремонт" << endl;
+		cout << "Enter 0 to select pipeline under repair or 1 to select not under repair" << endl;
 		choose = getBinNumber();
 		selectPipes = filterPipeByParametr(all_pipe, choose);
 	}
