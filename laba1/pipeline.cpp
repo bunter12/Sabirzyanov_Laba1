@@ -1,6 +1,8 @@
 #include "pipeline.h"
+#include "Network.h"
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <map>
 #include <regex>
@@ -59,22 +61,22 @@ void pipeline::SetRepair(bool r)
 	repair = r;
 }
 
-string pipeline::GetName()
+string pipeline::GetName() const
 {
 	return name;
 }
 
-int pipeline::GetLenght()
+int pipeline::GetLenght() const
 {
 	return lenght;
 }
 
-int pipeline::GetDiametr()
+int pipeline::GetDiametr() const
 {
 	return diametr;
 }
 
-bool pipeline::GetRepair()
+bool pipeline::GetRepair() const
 {
 	return repair;
 }
@@ -148,29 +150,24 @@ void editRepairStatus(pipeline& p) {
 }
 
 set<int> selectPipeById(unordered_map<int, pipeline>& all_pipe) {
-	cout << "Enter id of pipeline to select" << endl;
-	string input;
-	getline(cin, input);
-	auto lastPair = all_pipe.end();
-	set<int>selectId;
-	lastPair--;
-	int id;
-	regex num{ "[+\\-]{0,1}\\d+" };
-	vector<int> numbers;
-	transform(std::sregex_token_iterator{ input.cbegin(), input.cend(), num }, {}, back_inserter(numbers), [](const auto& val) { return std::stoi(val.str()); });
-	for (auto i : numbers) {
-		if (i > 0 and (i <= lastPair->first)) {
-			if (selectId.count(i) == 0)
-				selectId.insert(i);
+    std::set<int> selectID;
+    int id;
+	std::string input;
+    std::cout << "Enter the ID of the pipe: ";
+    getline(std::cin,input);
+	std::istringstream stream(input);
+	while (stream >> id){
+		if (all_pipe.find(id) != all_pipe.end()) {
+			selectID.insert(id);
 		}
 	}
-	return selectId;
+	return selectID;
 }
-void EditPipe(unordered_map<int, pipeline>& all_pipe) {
+void EditPipe(unordered_map<int, pipeline>& all_pipe, Network& network) {
 	ShowAllPipe(all_pipe);
 	string n;
-	cout << "Enter 0 to select pipeline by name or 1 to select by id" << endl;
-	cout << "Enter 0 to edit pipeline or 1 to delete" << endl;
+	cout << "Enter 0 to select pipeline by filter" << endl;
+	cout << "Enter 1 to select pipeline by id" << endl;
 	int in = getBinNumber();
 	set<int> selectId;
 	if (in)
@@ -181,15 +178,17 @@ void EditPipe(unordered_map<int, pipeline>& all_pipe) {
 		cout << "Selected pipelines with id ";
 		for (auto i : selectId)
 			cout << i << " ";
-		cout << endl<<"Enter 0 to edit pipeline or 1 to delete" << endl;
+		cout << endl<<"Enter 0 to delete pipeline or 1 to edit repair status" << endl;
 		in = getBinNumber();
 		if (in) {
 			for (auto i : selectId)
 				editRepairStatus(all_pipe[i]);
 		}
 		else {
-			for (auto i : selectId)
-				all_pipe.erase(i);
+			for (auto i : selectId) {
+                network.removeConnection(i);
+                all_pipe.erase(i);
+            }
 		}
 		cout << "Pipeline edited";
 	}

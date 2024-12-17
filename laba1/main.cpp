@@ -3,7 +3,9 @@
 #include "network.h"
 #include "utils.h"
 #include <chrono>
-#include <format>
+#include <ctime>
+#include <iomanip>
+#include <sstream>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -33,11 +35,15 @@ int main() {
 	nps nps;
 	unordered_map<int,pipeline> all_pipeline;
 	Network network(all_pipeline,all_nps);
-	redirect_output_wrapper cerr_out(cerr);
-	string time = format("{:%d_%m_%Y %H_%M_%OS}", chrono::system_clock::now());
-	ofstream logfile("log_" + time+".txt");
-	if (logfile)
-		cerr_out.redirect(logfile);
+	//redirect_output_wrapper cerr_out(cerr);
+	//auto now = std::chrono::system_clock::now();
+	//auto time_t_now = std::chrono::system_clock::to_time_t(now);
+	//std::stringstream ss;
+	//ss << std::put_time(std::localtime(&time_t_now), "%d_%m_%Y_%H_%M_%S");
+	//string time = ss.str();
+	//ofstream logfile("log_" + time+".txt");
+	//if (logfile)
+	//	cerr_out.redirect(logfile);
 	while(true){
 		system("cls");
 		cout << "Choose action:" << endl;
@@ -87,7 +93,7 @@ int main() {
 			if (all_pipeline.size() == 0)
 				NoOneObject();
 			else
-				EditPipe(all_pipeline);
+				EditPipe(all_pipeline, network);
 			backToMenu();
 			break;
 		case 5:
@@ -95,7 +101,7 @@ int main() {
 			if (all_nps.size() == 0)
 				NoOneObject();
 			else
-				EditNPS(all_nps);
+				EditNPS(all_nps, network);
 			backToMenu();
 			break;
 		case 6: {
@@ -108,6 +114,7 @@ int main() {
 			file << idnps << endl;
 			PipeToFile(all_pipeline, file);
 			NPSToFile(all_nps, file);
+			network.NetworkToFile(file);
 			file.close();
 			cout << "Objects saved to file" << endl;
 			backToMenu();
@@ -132,6 +139,7 @@ int main() {
 			idnps = stoi(input);
 			all_pipeline = PipeFromFile(file);
 			all_nps = NPSFromFile(file);
+			network.NetworkFromFile(file);
 			file.close();
 			cout << "Objects loaded from file" << endl;
 			backToMenu();

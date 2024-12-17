@@ -5,15 +5,17 @@
 #include <functional>
 #include <algorithm>
 #include <ranges>
+#include <fstream>
 #include "utils.h"
 #include "pipeline.h"
 #include "nps.h"
+#include <stack>
 
 int Network::findAvailablePipe(int diameter) {
     for (const auto& pair : pipes) {
         if (pair.second.GetDiametr() == diameter && !pair.second.GetRepair()) {
             bool isUsed = false;
-            for (const auto& edges : adjacencyList) {
+            for (const auto& edges : list) {
                 for (const auto& edge : edges.second) {
                     if (edge.pipeId == pair.first) {
                         isUsed = true;
@@ -39,39 +41,36 @@ bool Network::connectStations(int fromStationId, int toStationId, int diameter) 
     }
 
     Edge edge{fromStationId, toStationId, pipeId};
-    adjacencyList[fromStationId].push_back(edge);
+    list[fromStationId].push_back(edge);
     return true;
 }
 
 bool Network::hasCycle() {
     std::set<int> visited;
     std::set<int> recursionStack;
-    
-    std::function<bool(int)> hasCycleUtil = [&](int vertex) {
-        visited.insert(vertex);
-        recursionStack.insert(vertex);
-        
-        for (const Edge& edge : adjacencyList[vertex]) {
-            if (visited.find(edge.to) == visited.end()) {
-                if (hasCycleUtil(edge.to))
-                    return true;
-            }
-            else if (recursionStack.find(edge.to) != recursionStack.end()) {
-                return true;
-            }
-        }
-        
-        recursionStack.erase(vertex);
-        return false;
-    };
-    
+    std::stack<int> stack;
+
     for (const auto& pair : stations) {
         if (visited.find(pair.first) == visited.end()) {
-            if (hasCycleUtil(pair.first))
-                return true;
+            stack.push(pair.first);
+            while (!stack.empty()) {
+                int vertex = stack.top();
+                stack.pop();
+
+                if (recursionStack.find(vertex) != recursionStack.end()) {
+                    return true;
+                }
+                if (visited.find(vertex) == visited.end()) {
+                    visited.insert(vertex);
+                    recursionStack.insert(vertex);
+                    for (const Edge& edge : list[vertex]) {
+                        stack.push(edge.to);
+                    }
+                }
+                recursionStack.erase(vertex);
+            }
         }
     }
-    
     return false;
 }
 
@@ -86,7 +85,7 @@ std::vector<int> Network::topologicalSort() {
         inDegree[station.first] = 0;
     }
     
-    for (const auto& adj : adjacencyList) {
+    for (const auto& adj : list) {
         for (const Edge& edge : adj.second) {
             inDegree[edge.to]++;
         }
@@ -104,7 +103,7 @@ std::vector<int> Network::topologicalSort() {
         q.pop();
         result.push_back(vertex);
 
-        for (const Edge& edge : adjacencyList[vertex]) {
+        for (const Edge& edge : list[vertex]) {
             inDegree[edge.to]--;
             if (inDegree[edge.to] == 0) {
                 q.push(edge.to);
@@ -117,7 +116,7 @@ std::vector<int> Network::topologicalSort() {
 
 std::vector<Edge> Network::getEdges() const {
     std::vector<Edge> edges;
-    for (const auto& adj : adjacencyList) {
+    for (const auto& adj : list) {
         for (const Edge& edge : adj.second) {
             edges.push_back(edge);
         }
@@ -126,13 +125,28 @@ std::vector<Edge> Network::getEdges() const {
 }
 
 void Network::removeConnection(int pipeId) {
-    for (auto& adj : adjacencyList) {
+    for (auto& adj : list) {
         auto& edges = adj.second;
         edges.erase(
             std::remove_if(edges.begin(), edges.end(),
                 [pipeId](const Edge& edge) { return edge.pipeId == pipeId; }),
             edges.end()
         );
+    }
+}
+
+void Network::removeStationConnections(int stationId) {
+    for(auto edg: list){
+        if (edg.first == stationId){
+            list.erase(edg.first);
+        }   
+    }
+    for (auto edg : list) {
+        for(auto edg2 : edg.second){
+            if (edg2.to == stationId){
+                removeConnection(edg2.pipeId);
+            }
+        }
     }
 }
 
@@ -202,4 +216,38 @@ void Network::viewTopologicalSort() const {
             std::cout << "Station " << id << " (" << stations.at(id).GetName() << ")" << std::endl;
         }
     }
+}
+
+void Network::NetworkToFile(std::ofstream& file) {
+    if (!file.is_open()) {
+        std::cerr << "Error: could not open the file for writing."<< std::endl;
+        return;
+    }
+    file << list.size() << std::endl;
+    for (const auto& pair : list) {
+        file << pair.first << std::endl; 
+        for (const Edge& edge : pair.second) {
+            file << edge.pipeId << " " << edge.to << std::endl; 
+        }
+    }
+}
+
+std::unordered_map<int, std::vector<Edge>> Network::NetworkFromFile(std::ifstream& file) {
+    if (!file.is_open()) {
+        std::cerr << "Error: could not open the file for writing." << std::endl;
+        return {};
+    }
+    std::unordered_map<int, std::vector<Edge>> templist;
+    int stationCount;
+    file >> stationCount;
+    for (int i = 0; i < stationCount; ++i) {
+        int stationId;
+        file >> stationId;
+        while (file.peek() != '\n' && !file.eof()) {
+            Edge edge;
+            file >> edge.pipeId >> edge.to;
+            templist[stationId].push_back(edge);
+        }
+    }
+    return templist;
 }

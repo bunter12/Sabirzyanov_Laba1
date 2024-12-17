@@ -1,9 +1,12 @@
 #include "nps.h"
-#include "pipeline.h"
-#include <string>
-#include <iostream>
+#include "Network.h"
+#include <regex>
 #include <fstream>
-#include <regex>;
+#include <iostream>
+#include <string>
+#include <unordered_map>
+#include <set>
+#include <sstream>
 
 using namespace std;
 
@@ -117,23 +120,18 @@ void ShowAllNPS(unordered_map<int, nps> all_nps)
 }
 
 set<int> selectNPSByID(unordered_map<int, nps> all_nps) {
-	cout << "Enter station ID to select:" << endl;
-	string input;
-	getline(cin, input);
-	auto lastPair = all_nps.end();
-	set<int>selectId;
-	lastPair--;
+    std::set<int> selectID;
+	std::string input;
+    std::cout << "Enter the ID of the NPS: ";
+    getline(std::cin,input);
+	std::istringstream stream(input);
 	int id;
-	regex num{ "[+\\-]{0,1}\\d+" };
-	vector<int> numbers;
-	transform(std::sregex_token_iterator{ input.cbegin(), input.cend(), num }, {}, back_inserter(numbers), [](const auto& val) { return std::stoi(val.str()); });
-	for (auto i : numbers) {
-		if (i > 0 and (i <= lastPair->first)) {
-			if (selectId.count(i) == 0)
-				selectId.insert(i);
+	while (stream >> id){
+		if (all_nps.find(id) != all_nps.end()) {
+			selectID.insert(id);
 		}
 	}
-	return selectId;
+	return selectID;
 }
 
 void editNPSByCeh(nps& p) {
@@ -166,7 +164,7 @@ void editNPSByCeh(nps& p) {
 	}
 }
 
-void EditNPS(unordered_map<int, nps>& all_nps)
+void EditNPS(unordered_map<int, nps>& all_nps, Network& network)
 {
 	string n;
 	cout << "Enter 0 to select station by name" << endl;
@@ -189,8 +187,10 @@ void EditNPS(unordered_map<int, nps>& all_nps)
 				editNPSByCeh(all_nps[i]);
 		}
 		else {
-			for (auto i : selectId)
-				all_nps.erase(i);
+			for (auto i : selectId){
+                network.removeStationConnections(i);
+                all_nps.erase(i);
+            }
 		}
 		cout << "Changes applied";
 	}

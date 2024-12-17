@@ -2,6 +2,11 @@
 #include <string>
 #include <unordered_map>
 #include <set>
+#include "Network.h"
+
+
+class Network;
+
 class nps
 {
 public:
@@ -27,8 +32,8 @@ private:
 void ShowAllNPS(std::unordered_map<int, nps>  all_nps);
 std::set<int> selectNPSByID(std::unordered_map<int, nps> all_nps);
 void editNPSByCeh(nps& p);
-void EditNPS(std::unordered_map<int, nps>& all_nps);
+void EditNPS(std::unordered_map<int, nps>& all_nps, Network& network);
 void NPSToFile(std::unordered_map<int, nps>  all_nps, std::ofstream& file);
-std::unordered_map<int, nps>  NPSFromFile(std:: ifstream& file);
+std::unordered_map<int, nps>  NPSFromFile(std::ifstream& file);
 bool checkByParametr(nps p, std::string par);
 std::set<int> selectNPSByFilter(std::unordered_map<int, nps> all_nps);

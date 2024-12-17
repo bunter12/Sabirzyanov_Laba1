@@ -2,6 +2,10 @@
 #include <string>
 #include <unordered_map>
 #include <set>
+#include "Network.h"
+
+class Network; 
+
 class pipeline {
 public:
 	void SetName(std::string n);
@@ -26,7 +30,7 @@ private:
 bool is_number(std::string s);
 int getBinNumber();
 void ShowAllPipe(std::unordered_map<int,pipeline> all_pipe);
-void EditPipe(std::unordered_map<int, pipeline>&all_pipe);
+void EditPipe(std::unordered_map<int, pipeline>&all_pipe, Network& network);
 void PipeToFile(std::unordered_map<int, pipeline>  all_pipe, std::ofstream& file);
 std::unordered_map<int, pipeline>  PipeFromFile(std::ifstream &file);
 bool checkByParametr(pipeline p, std::string par);
